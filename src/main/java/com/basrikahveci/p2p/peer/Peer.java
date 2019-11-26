@@ -205,13 +205,24 @@ public class Peer {
         leadershipService.scheduleElection();
     }
 
-    public void sendMsg(Message message) {
+    public void broadcastMsg(Message message) {
         Collection<Connection> connections =  connectionService.getConnections();
         if(connections!=null) {
             for (Connection connection:connections){
                 connection.send(message);
             }
         }
+    }
+
+
+    public void sendMsg(String peerName,Message message){
+        Connection connection = connectionService.getConnection(peerName);
+        if(connection!=null){
+            connection.send(message);
+        }else{
+            LOGGER.warn("This peer {} is not connected to {}", config.getPeerName(), peerName);
+        }
+
     }
 
     public void disconnect(final String peerName) {

@@ -2,7 +2,7 @@ package com.basrikahveci.p2p.peer;
 
 import com.basrikahveci.p2p.peer.network.PeerChannelHandler;
 import com.basrikahveci.p2p.peer.network.PeerChannelInitializer;
-import com.basrikahveci.p2p.peer.network.message.Message;
+import com.basrikahveci.p2p.peer.network.message.Hello;
 import com.basrikahveci.p2p.peer.service.ConnectionService;
 import com.basrikahveci.p2p.peer.service.LeadershipService;
 import com.basrikahveci.p2p.peer.service.PingService;
@@ -146,12 +146,21 @@ public class PeerHandle {
         return connectToHostFuture;
     }
 
-    public void send(Message message){
-        peerEventLoopGroup.execute(()->peer.sendMsg(message));
+    public void send(String peerName,String message){
+        final Hello hello = new Hello();
+        hello.setData(message);
+        peerEventLoopGroup.execute(()->peer.sendMsg(peerName,hello));
+        LOGGER.info("{} Successfully send message {}", config.getPeerName(), message);
     }
 
     public void disconnect(final String peerName) {
         peerEventLoopGroup.execute(() -> peer.disconnect(peerName));
     }
 
+    public void broadcast(String message) {
+        final Hello hello = new Hello();
+        hello.setData(message);
+        peerEventLoopGroup.execute(()->peer.broadcastMsg(hello));
+        LOGGER.info("{} Successfully broadcast message {}", config.getPeerName(), message);
+    }
 }
