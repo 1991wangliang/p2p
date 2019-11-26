@@ -2,6 +2,7 @@ package com.basrikahveci.p2p.peer;
 
 import com.basrikahveci.p2p.peer.network.PeerChannelHandler;
 import com.basrikahveci.p2p.peer.network.PeerChannelInitializer;
+import com.basrikahveci.p2p.peer.network.message.Message;
 import com.basrikahveci.p2p.peer.service.ConnectionService;
 import com.basrikahveci.p2p.peer.service.LeadershipService;
 import com.basrikahveci.p2p.peer.service.PingService;
@@ -69,9 +70,12 @@ public class PeerHandle {
         final PeerChannelInitializer peerChannelInitializer = new PeerChannelInitializer(config, encoder,
                 peerEventLoopGroup, peerChannelHandler);
         final ServerBootstrap peerBootstrap = new ServerBootstrap();
-        peerBootstrap.group(acceptorEventLoopGroup, networkEventLoopGroup).channel(NioServerSocketChannel.class)
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000).option(ChannelOption.SO_KEEPALIVE, true)
-                .option(ChannelOption.SO_BACKLOG, 100).handler(new LoggingHandler(LogLevel.INFO))
+        peerBootstrap.group(acceptorEventLoopGroup, networkEventLoopGroup)
+                .channel(NioServerSocketChannel.class)
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
+                .option(ChannelOption.SO_KEEPALIVE, true)
+                .option(ChannelOption.SO_BACKLOG, 100)
+                .handler(new LoggingHandler(LogLevel.INFO))
                 .childHandler(peerChannelInitializer);
 
         final ChannelFuture bindFuture = peerBootstrap.bind(portToBind).sync();
@@ -140,6 +144,10 @@ public class PeerHandle {
         peerEventLoopGroup.execute(() -> peer.connectTo(host, port, connectToHostFuture));
 
         return connectToHostFuture;
+    }
+
+    public void send(Message message){
+        peerEventLoopGroup.execute(()->peer.sendMsg(message));
     }
 
     public void disconnect(final String peerName) {

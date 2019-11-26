@@ -1,6 +1,7 @@
 package com.basrikahveci.p2p.peer;
 
 import com.basrikahveci.p2p.peer.network.Connection;
+import com.basrikahveci.p2p.peer.network.message.Message;
 import com.basrikahveci.p2p.peer.network.message.ping.CancelPongs;
 import com.basrikahveci.p2p.peer.network.message.ping.Ping;
 import com.basrikahveci.p2p.peer.network.message.ping.Pong;
@@ -204,6 +205,15 @@ public class Peer {
         leadershipService.scheduleElection();
     }
 
+    public void sendMsg(Message message) {
+        Collection<Connection> connections =  connectionService.getConnections();
+        if(connections!=null) {
+            for (Connection connection:connections){
+                connection.send(message);
+            }
+        }
+    }
+
     public void disconnect(final String peerName) {
         if (isShutdown()) {
             LOGGER.warn("Not disconnected from {} since not running", peerName);
@@ -226,6 +236,7 @@ public class Peer {
     public void setBindChannel(final Channel bindChannel) {
         this.bindChannel = bindChannel;
     }
+
 
     public void ping(final CompletableFuture<Collection<String>> futureToNotify) {
         if (isShutdown()) {
@@ -273,5 +284,6 @@ public class Peer {
     private boolean isShutdown() {
         return !running;
     }
+
 
 }

@@ -68,6 +68,7 @@ public class Pong implements Message {
         return ttl > 1 ? new Pong(pingPeerName, thisPeerName, peerName, serverHost, serverPort, ttl - 1, hops + 1) : null;
     }
 
+    @Override
     public void handle(Peer peer, Connection connection) {
         peer.handlePong(connection, this);
     }

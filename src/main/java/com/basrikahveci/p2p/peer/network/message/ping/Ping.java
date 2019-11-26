@@ -56,6 +56,7 @@ public class Ping implements Message {
         return ttl > 1 ? new Ping(peerName, ttl - 1, hops + 1, pingTimeoutDurationInMillis) : null;
     }
 
+    @Override
     public void handle(Peer peer, Connection connection) {
         peer.handlePing(connection, this);
     }

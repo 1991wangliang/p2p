@@ -10,6 +10,11 @@ import java.io.Serializable;
  */
 public interface Message extends Serializable {
 
+    /**
+     * receive message handler, msg is this obj.
+     * @param peer self peer
+     * @param connection remote connection
+     */
     void handle(Peer peer, Connection connection);
 
 }

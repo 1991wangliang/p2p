@@ -7,7 +7,6 @@ import com.basrikahveci.p2p.peer.network.PeerChannelHandler;
 import com.basrikahveci.p2p.peer.network.PeerChannelInitializer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -91,13 +90,14 @@ public class ConnectionService {
         final PeerChannelHandler handler = new PeerChannelHandler(config, peer);
         final PeerChannelInitializer initializer = new PeerChannelInitializer(config, encoder, peerEventLoopGroup, handler);
         final Bootstrap clientBootstrap = new Bootstrap();
-        clientBootstrap.group(networkEventLoopGroup).channel(NioSocketChannel.class).option(ChannelOption.TCP_NODELAY, true)
+        clientBootstrap.group(networkEventLoopGroup)
+                .channel(NioSocketChannel.class)
+                .option(ChannelOption.TCP_NODELAY, true)
                 .handler(initializer);
 
         final ChannelFuture connectFuture = clientBootstrap.connect(host, port);
         if (futureToNotify != null) {
-            connectFuture.addListener(new ChannelFutureListener() {
-                public void operationComplete(ChannelFuture future) throws Exception {
+            connectFuture.addListener((ChannelFuture future)->{
                     if (future.isSuccess()) {
                         futureToNotify.complete(null);
                         LOGGER.info("Successfully connect to {}:{}", host, port);
@@ -106,7 +106,7 @@ public class ConnectionService {
                         LOGGER.error("Could not connect to " + host + ":" + port, future.cause());
                     }
                 }
-            });
+            );
         }
     }
 

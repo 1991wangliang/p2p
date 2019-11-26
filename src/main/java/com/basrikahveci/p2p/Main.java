@@ -201,6 +201,8 @@ public class Main {
         System.out.println(
                 "# 4) election            >>> Starts a new leader election                                             #");
         System.out.println(
+                "# 5) send msg            >>> Send a message to p2p network                                            #");
+        System.out.println(
                 "#######################################################################################################");
     }
 

@@ -2,6 +2,7 @@ package com.basrikahveci.p2p;
 
 import com.basrikahveci.p2p.peer.Config;
 import com.basrikahveci.p2p.peer.PeerHandle;
+import com.basrikahveci.p2p.peer.network.message.Hello;
 import io.netty.channel.ChannelFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +51,11 @@ public class PeerRunner {
                 handle.disconnect(tokens[1]);
             } else if (command.equals("election")) {
                 handle.scheduleLeaderElection();
+            } else if (command.startsWith("send")) {
+                final String message = command.split(" ")[1];
+                Hello hello = new Hello();
+                hello.setData(message);
+                handle.send(hello);
             } else {
                 result = INVALID_COMMAND;
             }

@@ -23,6 +23,7 @@ public class Handshake implements Message {
         this.leaderName = leaderName;
     }
 
+    @Override
     public void handle(Peer peer, Connection connection) {
         final String peerName = connection.getPeerName();
         if (peerName == null) {
