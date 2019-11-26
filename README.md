@@ -9,6 +9,8 @@ It has following capabilities:
 - Leave the network
 - List peers in the network
 - Leader election
+- Send Message to Peer
+- Broadcast Message to P2P network
 
 P2P network is unstructured. Once a peer is started, it can join by connecting to any of the peers in the network. 
  
