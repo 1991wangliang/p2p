@@ -1,5 +1,6 @@
 package com.basrikahveci.p2p.peer;
 
+import com.basrikahveci.p2p.config.P2PConfig;
 import com.basrikahveci.p2p.peer.network.PeerChannelHandler;
 import com.basrikahveci.p2p.peer.network.PeerChannelInitializer;
 import com.basrikahveci.p2p.peer.network.message.Hello;
@@ -50,7 +51,12 @@ public class PeerHandle {
 
     private Future timeoutPingsFuture;
 
-    public PeerHandle(Config config, int portToBind) {
+    public PeerHandle(P2PConfig p2PConfig){
+        this(new Config(p2PConfig.getPeerName()),p2PConfig.getPort());
+    }
+
+
+    private PeerHandle(Config config, int portToBind) {
         this.config = config;
         this.portToBind = portToBind;
         final ConnectionService connectionService = new ConnectionService(config, networkEventLoopGroup, peerEventLoopGroup, encoder);

@@ -22,7 +22,7 @@ public class PeerChannelHandler extends SimpleChannelInboundHandler<Message> {
     private static final Logger LOGGER = LoggerFactory.getLogger(PeerChannelHandler.class);
 
     static Attribute<Connection> getSessionAttribute(ChannelHandlerContext ctx) {
-        return ctx.attr(AttributeKey.<Connection>valueOf(SESSION_ATTRIBUTE_KEY));
+        return ctx.channel().attr(AttributeKey.<Connection>valueOf(SESSION_ATTRIBUTE_KEY));
     }
 
     private final Config config;

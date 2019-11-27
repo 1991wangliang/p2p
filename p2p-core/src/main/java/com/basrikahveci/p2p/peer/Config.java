@@ -20,6 +20,12 @@ public class Config {
 
     public static final int DEFAULT_LEADER_REJECTION_TIMEOUT_SECONDS = 10;
 
+    public Config() {
+    }
+
+    public Config(String peerName) {
+        this.peerName = peerName;
+    }
 
     /**
      * Name of the peer. It must be unique across the p2p network
