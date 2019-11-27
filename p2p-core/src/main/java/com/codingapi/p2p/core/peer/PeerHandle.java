@@ -6,15 +6,14 @@ import com.codingapi.p2p.core.peer.network.PeerChannelHandler;
 import com.codingapi.p2p.core.peer.network.PeerChannelInitializer;
 import com.codingapi.p2p.core.peer.network.message.Hello;
 import com.codingapi.p2p.core.peer.service.ConnectionService;
+import com.codingapi.p2p.core.peer.service.IPingService;
 import com.codingapi.p2p.core.peer.service.LeadershipService;
-import com.codingapi.p2p.core.peer.service.PingService;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 import io.netty.handler.logging.LogLevel;
@@ -38,13 +37,13 @@ public class PeerHandle {
 
     private final int portToBind;
 
-    private final EventLoopGroup acceptorEventLoopGroup = new NioEventLoopGroup(1);
+    private final EventLoopGroup acceptorEventLoopGroup;
 
-    private final EventLoopGroup networkEventLoopGroup = new NioEventLoopGroup(6);
+    private final EventLoopGroup networkEventLoopGroup;
 
-    private final EventLoopGroup peerEventLoopGroup = new NioEventLoopGroup(1);
+    private final EventLoopGroup peerEventLoopGroup;
 
-    private final ObjectEncoder encoder = new ObjectEncoder();
+    private final ObjectEncoder encoder;
 
     private final Peer peer;
 
@@ -52,19 +51,16 @@ public class PeerHandle {
 
     private Future timeoutPingsFuture;
 
-    public PeerHandle(P2PConfig p2PConfig){
-        this(new Config(p2PConfig.getPeerName()),p2PConfig.getPort());
-    }
-
-
-    private PeerHandle(Config config, int portToBind) {
-        this.config = config;
-        this.portToBind = portToBind;
-        final ConnectionService connectionService = new ConnectionService(config, networkEventLoopGroup, peerEventLoopGroup, encoder);
-        final LeadershipService leadershipService = new LeadershipService(connectionService, config, peerEventLoopGroup);
-        final PingService pingService = new PingService(connectionService, leadershipService, config);
+    public PeerHandle(P2PConfig p2PConfig, PeerEventLoopGroup peerEventLoopGroupBean, ConnectionService connectionService, LeadershipService leadershipService, IPingService pingService){
+        this.config = new Config(p2PConfig.getPeerName());
+        this.portToBind = p2PConfig.getPort();
+        acceptorEventLoopGroup = peerEventLoopGroupBean.getAcceptorEventLoopGroup();
+        networkEventLoopGroup = peerEventLoopGroupBean.getNetworkEventLoopGroup();
+        peerEventLoopGroup = peerEventLoopGroupBean.getPeerEventLoopGroup();
+        encoder = peerEventLoopGroupBean.getEncoder();
         this.peer = new Peer(config, connectionService, pingService, leadershipService);
     }
+
 
     public String getPeerName() {
         return config.getPeerName();

@@ -2,6 +2,7 @@ package com.codingapi.p2p.core.peer.service;
 
 import com.codingapi.p2p.core.peer.Config;
 import com.codingapi.p2p.core.peer.Peer;
+import com.codingapi.p2p.core.peer.PeerEventLoopGroup;
 import com.codingapi.p2p.core.peer.network.Connection;
 import com.codingapi.p2p.core.peer.network.PeerChannelHandler;
 import com.codingapi.p2p.core.peer.network.PeerChannelInitializer;
@@ -38,7 +39,12 @@ public class ConnectionService {
     // server name -> connection
     private final Map<String, Connection> connections = new HashMap<String, Connection>();
 
-    public ConnectionService(Config config, EventLoopGroup networkEventLoopGroup, EventLoopGroup peerEventLoopGroup,
+
+    public ConnectionService(PeerEventLoopGroup peerEventLoopGroup){
+        this(peerEventLoopGroup.getConfig(),peerEventLoopGroup.getNetworkEventLoopGroup(),peerEventLoopGroup.getPeerEventLoopGroup(),peerEventLoopGroup.getEncoder());
+    }
+
+    private ConnectionService(Config config, EventLoopGroup networkEventLoopGroup, EventLoopGroup peerEventLoopGroup,
                              ObjectEncoder encoder) {
         this.config = config;
         this.networkEventLoopGroup = networkEventLoopGroup;

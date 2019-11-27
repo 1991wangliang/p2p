@@ -2,6 +2,7 @@ package com.codingapi.p2p.core.peer.service;
 
 import com.codingapi.p2p.core.peer.Config;
 import com.codingapi.p2p.core.peer.Peer;
+import com.codingapi.p2p.core.peer.PeerEventLoopGroup;
 import com.codingapi.p2p.core.peer.network.Connection;
 import com.codingapi.p2p.core.peer.network.message.leader.AnnounceLeader;
 import com.codingapi.p2p.core.peer.network.message.leader.Election;
@@ -40,7 +41,11 @@ public class LeadershipService {
      */
     private ScheduledFuture electionTimeoutFuture;
 
-    public LeadershipService(ConnectionService connectionService, Config config, EventLoopGroup peerEventLoopGroup) {
+    public LeadershipService(ConnectionService connectionService,PeerEventLoopGroup peerEventLoopGroup){
+        this(connectionService,peerEventLoopGroup.getConfig(),peerEventLoopGroup.getPeerEventLoopGroup());
+    }
+
+    private LeadershipService(ConnectionService connectionService, Config config, EventLoopGroup peerEventLoopGroup) {
         this.connectionService = connectionService;
         this.config = config;
         this.peerEventLoopGroup = peerEventLoopGroup;

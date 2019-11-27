@@ -6,8 +6,8 @@ import com.codingapi.p2p.core.peer.network.message.ping.CancelPongs;
 import com.codingapi.p2p.core.peer.network.message.ping.Ping;
 import com.codingapi.p2p.core.peer.network.message.ping.Pong;
 import com.codingapi.p2p.core.peer.service.ConnectionService;
+import com.codingapi.p2p.core.peer.service.IPingService;
 import com.codingapi.p2p.core.peer.service.LeadershipService;
-import com.codingapi.p2p.core.peer.service.PingService;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,7 @@ public class Peer {
 
     private final ConnectionService connectionService;
 
-    private final PingService pingService;
+    private final IPingService pingService;
 
     private final LeadershipService leadershipService;
 
@@ -36,7 +36,7 @@ public class Peer {
 
     private boolean running = true;
 
-    public Peer(Config config, ConnectionService connectionService, PingService pingService, LeadershipService leadershipService) {
+    public Peer(Config config, ConnectionService connectionService, IPingService pingService, LeadershipService leadershipService) {
         this.config = config;
         this.connectionService = connectionService;
         this.pingService = pingService;

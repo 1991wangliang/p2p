@@ -11,6 +11,7 @@ It has following capabilities:
 - Leader election
 - Send Message to Peer
 - Broadcast Message to P2P network
+- 2 PingService way  
 
 P2P network is unstructured. Once a peer is started, it can join by connecting to any of the peers in the network. 
  
@@ -46,18 +47,25 @@ It can be compiled with `mvn clean compile` and final jar can be produced with `
 Run
 ================
   
-You can start a peer by starting a java process with the produced jar file as follows:
-  
-`java -jar -DpeerName=Peer1 p2p.jar -n Peer1 -b 50670` 
+You can start peer-a,peer-b,peer-c,peer-d. that support 2 PingService.   
+1. ForWardPingService. when receive ping message,that can forward all neighbours, also the neighbours can connect this peer.
+2. NoForWardPingService.when receive ping message,that only back to the neighbour that pong message .  
 
-This command starts a peer with name `Peer1` and binds it to port `50670`. It is the user's responsibility to guarantee uniqueness among names of the peers. 
-
-`-DpeerName=...` is not necessary if you change default logging configuration of the project.
- 
- After starting the peer, you can type `help` to see available commands.
- 
- 
- 
+peer-a web port is 8081,p2p port is 50602,peer-b is 8082,50602 , all peer can use flow commands: 
+* /list  
+    see all online peers .
+* /connect?host=val&port=val  
+    connect peer.
+* /leave  
+    leave this p2p network.
+* /disconnect  
+    disconnect peer.
+* /send  
+    send msg to peer.
+* /broadcast  
+    send all online peers msg.
+    
+like  http://127.0.0.1:8081/list      
  
 Contribution is welcomed
 ================

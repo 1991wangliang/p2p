@@ -1,6 +1,7 @@
 package com.codingapi.p2p.core.peer.service;
 
 import com.codingapi.p2p.core.peer.Config;
+import com.codingapi.p2p.core.peer.PeerEventLoopGroup;
 import com.codingapi.p2p.core.peer.network.Connection;
 import com.codingapi.p2p.core.peer.network.message.KeepAlive;
 import com.codingapi.p2p.core.peer.network.message.ping.CancelPings;
@@ -18,9 +19,9 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Maintains all of the ongoing Ping operations either initiated by this peer or other peers in the network
  */
-public class PingService {
+public class NoForwardPingService implements IPingService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PingService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(NoForwardPingService.class);
 
     private final ConnectionService connectionService;
 
@@ -32,10 +33,10 @@ public class PingService {
 
     private int autoPingCount;
 
-    public PingService(ConnectionService connectionService, LeadershipService leadershipService, Config config) {
+    public NoForwardPingService(ConnectionService connectionService, LeadershipService leadershipService, PeerEventLoopGroup peerEventLoopGroup) {
         this.connectionService = connectionService;
         this.leadershipService = leadershipService;
-        this.config = config;
+        this.config = peerEventLoopGroup.getConfig();
     }
 
     /**
@@ -44,6 +45,7 @@ public class PingService {
      *
      * @param discoveryPingEnabled if true, then peer is allowed to trigger a discovery ping to learn about other peers
      */
+    @Override
     public void keepAlive(final boolean discoveryPingEnabled) {
         if (!currentPings.containsKey(config.getPeerName())) {
             if (incrementAutoPingCountAndCheckIfFullPing() && discoveryPingEnabled) {
@@ -64,6 +66,7 @@ public class PingService {
      *
      * @param future future to be informed once the Ping is completed.
      */
+    @Override
     public void ping(final CompletableFuture<Collection<String>> future) {
         PingContext pingContext = currentPings.get(config.getPeerName());
         if (pingContext == null) {
@@ -79,14 +82,14 @@ public class PingService {
 
     /**
      * Handles a Ping operation initiated by another node. If the received {@link Ping} message is allowed to be
-     * propagated, this peer also propagates it to its own neighbours. Additionally, it sends a {@link Pong} message
-     * back to the neighbour that has sent the {@link Ping} message to this peer.
+     * propagated,it sends a {@link Pong} message back to the neighbour that has sent the {@link Ping} message to this peer.
      *
      * @param bindAddress Network address that this peer bind
      * @param connection  Connection of the neighbour that sent the Ping message
      * @param ping        Ping message that is received. It can be initiated by the neighbour with the given connection or
      *                    any other peer that has no direct connection to this peer
      */
+    @Override
     public void handlePing(final InetSocketAddress bindAddress, final Connection connection, final Ping ping) {
         final String pingPeerName = ping.getPeerName();
         if (currentPings.containsKey(pingPeerName)) {
@@ -107,17 +110,6 @@ public class PingService {
         final Pong pong = new Pong(pingPeerName, config.getPeerName(), config.getPeerName(),
                 bindAddress.getAddress().getHostAddress(), bindAddress.getPort(), ping.getHops() + 1, 0);
         connection.send(pong);
-
-        final Ping next = ping.next();
-        if (next != null) {
-            for (Connection neighbour : connectionService.getConnections()) {
-                if (!neighbour.equals(connection) && !neighbour.getPeerName().equals(ping.getPeerName())) {
-                    LOGGER.info("Forwarding {} to {} for initiator {}", next, neighbour.getPeerName(),
-                            ping.getPeerName());
-                    neighbour.send(next);
-                }
-            }
-        }
     }
 
     /**
@@ -125,6 +117,7 @@ public class PingService {
      *
      * @param connection new connection that existing Ping operations will be propagated
      */
+    @Override
     public void propagatePingsToNewConnection(final Connection connection) {
         for (PingContext pingContext : currentPings.values()) {
             if (!pingContext.getPeerName().equals(connection.getPeerName())) {
@@ -142,6 +135,7 @@ public class PingService {
      *
      * @param pong Pong message that is sent in response to a {@link Ping} message propagated by this peer.
      */
+    @Override
     public void handlePong(final Pong pong) {
         if (pong.getPeerName().equals(config.getPeerName())) {
             LOGGER.warn("Received {} from itself", pong);
@@ -164,6 +158,7 @@ public class PingService {
      *
      * @param disconnectedPeerName name of the disconnected peer
      */
+    @Override
     public void cancelPongs(final String disconnectedPeerName) {
         final Iterator<Entry<String, PingContext>> pingIt = currentPings.entrySet().iterator();
 
@@ -228,6 +223,7 @@ public class PingService {
      * @param connection           connection of the neighbour that notifies this peer about disconnected peer
      * @param disconnectedPeerName name of disconnected peer
      */
+    @Override
     public void cancelPings(final Connection connection, final String disconnectedPeerName) {
         final Iterator<Entry<String, PingContext>> pingIt = currentPings.entrySet().iterator();
 
@@ -263,6 +259,7 @@ public class PingService {
     /**
      * Cancels this peers ping operation and notifies its futures
      */
+    @Override
     public void cancelOwnPing() {
         final PingContext pingContext = currentPings.get(config.getPeerName());
         if (pingContext != null) {
@@ -279,6 +276,7 @@ public class PingService {
      *
      * @return Pong messages return in response to the ongoing Ping operation of this peer.
      */
+    @Override
     public Collection<Pong> timeoutPings() {
         Collection<Pong> pongs = Collections.emptyList();
 
