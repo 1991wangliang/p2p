@@ -1,17 +1,31 @@
-.clover/
+HELP.md
 target/
-.project
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**
+!**/src/test/**
+
+### STS ###
+.apt_generated
 .classpath
-.settings/
-.idea/
-.patch
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
 *.iml
 *.ipr
-*.iws
-*.log
-.DS_Store
-reports/
-.directory
-atlassian-ide-plugin.xml
-.surefire-*
-/bin/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+
+### VS Code ###
+.vscode/

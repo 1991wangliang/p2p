@@ -6,18 +6,12 @@
         <artifactId>p2p</artifactId>
         <groupId>com.basrikahveci</groupId>
         <version>0.1-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>p2p-core</artifactId>
     <version>0.1-SNAPSHOT</version>
 
     <dependencies>
-        <dependency>
-            <groupId>net.sf.jopt-simple</groupId>
-            <artifactId>jopt-simple</artifactId>
-            <version>${jopt-simple.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>com.google.guava</groupId>
