@@ -12,6 +12,7 @@ It has following capabilities:
 - Send Message to Peer
 - Broadcast Message to P2P network
 - 2 PingService way  
+- Support UPnP 
 
 P2P network is unstructured. Once a peer is started, it can join by connecting to any of the peers in the network. 
  

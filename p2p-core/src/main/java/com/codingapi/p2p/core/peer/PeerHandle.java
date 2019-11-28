@@ -8,6 +8,7 @@ import com.codingapi.p2p.core.peer.network.message.Hello;
 import com.codingapi.p2p.core.peer.service.ConnectionService;
 import com.codingapi.p2p.core.peer.service.IPingService;
 import com.codingapi.p2p.core.peer.service.LeadershipService;
+import com.codingapi.upnp.UPnP;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -31,7 +32,6 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 public class PeerHandle {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PeerHandle.class);
-
 
     private final Config config;
 
@@ -67,6 +67,15 @@ public class PeerHandle {
     }
 
     public ChannelFuture start() throws InterruptedException {
+        //start UPnP
+        boolean supportUPnP =  UPnP.isUPnPAvailable();
+        if(supportUPnP){
+            if(!UPnP.isMappedTCP(portToBind)){
+                UPnP.openPortTCP(portToBind);
+                LOGGER.info("UPnP openPortTCP:{}",portToBind);
+            }
+        }
+
         ChannelFuture closeFuture = null;
 
         final PeerChannelHandler peerChannelHandler = new PeerChannelHandler(config, peer);
@@ -133,6 +142,14 @@ public class PeerHandle {
             timeoutPingsFuture.cancel(false);
             keepAliveFuture = null;
             timeoutPingsFuture = null;
+        }
+        //close UPnP
+        boolean supportUPnP =  UPnP.isUPnPAvailable();
+        if(supportUPnP){
+            if(!UPnP.isMappedTCP(portToBind)){
+                UPnP.closePortTCP(portToBind);
+                LOGGER.info("UPnP closePortTCP:{}",portToBind);
+            }
         }
         return future;
     }

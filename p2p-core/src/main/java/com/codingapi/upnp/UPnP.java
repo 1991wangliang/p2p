@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package com.dosse.upnp;
+package com.codingapi.upnp;
 
 /**
  * This class contains static methods that allow quick access to UPnP Port Mapping.<br>
@@ -72,11 +72,6 @@ public class UPnP {
     public static boolean openPortTCP(int port) {
         if(!isUPnPAvailable()) return false;
         return defaultGW.openPort(port, false);
-    }
-
-    public static boolean openPortTCP2(String host,int port) {
-        if(!isUPnPAvailable()) return false;
-        return defaultGW.openPort2(host,port, false);
     }
     
     /**

@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301  USA
  */
-package com.dosse.upnp;
+package com.codingapi.upnp;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -145,27 +145,6 @@ class Gateway {
         }
     }
 
-
-    public boolean openPort2(String host,int port, boolean udp) {
-        if (port < 0 || port > 65535) {
-            throw new IllegalArgumentException("Invalid port");
-        }
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("NewRemoteHost", "");
-        params.put("NewProtocol", udp ? "UDP" : "TCP");
-        params.put("NewInternalClient", host);
-        params.put("NewExternalPort", "" + port);
-        params.put("NewInternalPort", "" + port);
-        params.put("NewEnabled", "1");
-        params.put("NewPortMappingDescription", "WaifUPnP");
-        params.put("NewLeaseDuration", "0");
-        try {
-            Map<String, String> r = command("AddPortMapping", params);
-            return r.get("errorCode") == null;
-        } catch (Exception ex) {
-            return false;
-        }
-    }
 
     public boolean openPort(int port, boolean udp) {
         if (port < 0 || port > 65535) {
