@@ -18,6 +18,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.InetSocketAddress;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -30,15 +32,15 @@ public class ConnectMsg implements ClientMessage {
         new Thread(){
             @Override
             public void run() {
-                server(channel);
+                server();
 //                channel.close();
-                client(channel);
+                client();
             }
         }.start();
     }
 
 
-    private void server(Channel channel){
+    private void server(){
         final EventLoopGroup acceptorEventLoopGroup = new NioEventLoopGroup(1);
         final EventLoopGroup networkEventLoopGroup = new NioEventLoopGroup(6);
         final ServerBootstrap peerBootstrap = new ServerBootstrap();
@@ -56,12 +58,13 @@ public class ConnectMsg implements ClientMessage {
                         pipeline.addLast(new MyPeerHandler(getName()));
                     }
                 });
-        peerBootstrap.bind(channel.localAddress());
 
-        log.info("bind {}",channel.localAddress());
+        InetSocketAddress inetSocketAddress = new InetSocketAddress(getSelfHost(),getSelfPort());
+        peerBootstrap.bind(inetSocketAddress);
+        log.info("bind {}",inetSocketAddress);
     }
 
-    private void client(Channel channel){
+    private void client(){
         EventLoopGroup networkEventLoopGroup = new NioEventLoopGroup();
         final Bootstrap clientBootstrap = new Bootstrap();
         clientBootstrap.group(networkEventLoopGroup)
@@ -85,13 +88,18 @@ public class ConnectMsg implements ClientMessage {
 
     private String host;
     private int port;
+    private String selfHost;
+    private int selfPort;
     private String name;
+
 
     @Override
     public String toString() {
         return "ConnectMsg{" +
                 "host='" + host + '\'' +
                 ", port=" + port +
+                ", selfPort=" + selfPort +
+                ", selfHost='" + selfHost + '\'' +
                 ", name='" + name + '\'' +
                 '}';
     }
