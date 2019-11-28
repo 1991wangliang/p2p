@@ -24,14 +24,6 @@ public class Server {
     public void start() {
 
         int port = 8090;
-
-        boolean available =  UPnP.isUPnPAvailable();
-        if(available){
-            if(!UPnP.isMappedTCP(port)){
-                UPnP.openPortTCP(port);
-            }
-        }
-
         final ServerBootstrap peerBootstrap = new ServerBootstrap();
         peerBootstrap.group(acceptorEventLoopGroup, networkEventLoopGroup)
                 .channel(NioServerSocketChannel.class)

@@ -1,6 +1,7 @@
 package com.codingapi.penetration;
 
 import com.codingapi.penetrationclient.MyPeerHandler;
+import com.dosse.upnp.UPnP;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -19,7 +20,6 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 
 @Data
@@ -36,7 +36,7 @@ public class ConnectMsg implements ClientMessage {
             public void run() {
 //                channel.close();
                 server();
-                client(channel);
+                client();
             }
         }.start();
     }
@@ -61,7 +61,13 @@ public class ConnectMsg implements ClientMessage {
                     }
                 });
 
-//        InetSocketAddress inetSocketAddress = new InetSocketAddress(getSelfHost(),getSelfPort());
+        int port = getSelfPort();
+        boolean available =  UPnP.isUPnPAvailable();
+        if(available){
+            if(!UPnP.isMappedTCP(port)){
+                UPnP.openPortTCP(port);
+            }
+        }
         try {
             peerBootstrap.bind(InetAddress.getLocalHost().getHostAddress(),getSelfPort());
         } catch (UnknownHostException e) {
@@ -70,7 +76,7 @@ public class ConnectMsg implements ClientMessage {
         log.info("bind {}",getSelfPort());
     }
 
-    private void client(Channel channel){
+    private void client(){
         EventLoopGroup networkEventLoopGroup = new NioEventLoopGroup();
         final Bootstrap clientBootstrap = new Bootstrap();
         clientBootstrap.group(networkEventLoopGroup)
@@ -89,16 +95,10 @@ public class ConnectMsg implements ClientMessage {
                     }
                 });
 
-//        clientBootstrap.bind(getSelfHost(),getSelfPort());
-//        log.info("bind {}:{}",getSelfHost(),getSelfPort());
-
-
         clientBootstrap.connect(getHost(),getPort());
-
 
         log.info("connect {}:{}",getHost(),getPort());
 
-//        channel.close();
     }
 
     private String host;
@@ -113,8 +113,8 @@ public class ConnectMsg implements ClientMessage {
         return "ConnectMsg{" +
                 "host='" + host + '\'' +
                 ", port=" + port +
-                ", selfPort=" + selfPort +
                 ", selfHost='" + selfHost + '\'' +
+                ", selfPort=" + selfPort +
                 ", name='" + name + '\'' +
                 '}';
     }
