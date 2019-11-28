@@ -21,11 +21,7 @@
         <module>p2p-peer-b</module>
         <module>p2p-peer-c</module>
         <module>p2p-peer-d</module>
-
-        <module>penetration-client</module>
-        <module>penetration-server</module>
-        <module>upnp-core</module>
-
+        <module>stun4j</module>
     </modules>
 
     <packaging>pom</packaging>
