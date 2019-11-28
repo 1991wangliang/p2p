@@ -27,8 +27,8 @@ public class Hello implements ClientMessage {
             InetSocketAddress inetSocketAddressA = (InetSocketAddress) peerA.remoteAddress();
             Channel peerB =  channels.get(1);
             InetSocketAddress inetSocketAddressB = (InetSocketAddress) peerB.remoteAddress();
-            peerA.writeAndFlush(new ConnectMsg(inetSocketAddressB.getHostString(),inetSocketAddressB.getPort(),"peerA"));
-            peerB.writeAndFlush(new ConnectMsg(inetSocketAddressA.getHostString(),inetSocketAddressA.getPort(),"peerB"));
+            peerA.writeAndFlush(new ConnectMsg(inetSocketAddressB.getHostString(),inetSocketAddressB.getPort(),inetSocketAddressA.getHostString(),inetSocketAddressA.getPort(),"peerA"));
+            peerB.writeAndFlush(new ConnectMsg(inetSocketAddressA.getHostString(),inetSocketAddressA.getPort(),inetSocketAddressB.getHostString(),inetSocketAddressB.getPort(),"peerB"));
             channels.clear();
         }
     }

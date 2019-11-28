@@ -20,13 +20,18 @@ public class ConnectMsg implements ClientMessage {
 
     private String host;
     private int port;
+    private String selfHost;
+    private int selfPort;
     private String name;
+
 
     @Override
     public String toString() {
         return "ConnectMsg{" +
                 "host='" + host + '\'' +
                 ", port=" + port +
+                ", selfPort=" + selfPort +
+                ", selfHost='" + selfHost + '\'' +
                 ", name='" + name + '\'' +
                 '}';
     }
