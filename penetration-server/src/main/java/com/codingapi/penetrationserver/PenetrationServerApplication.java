@@ -13,7 +13,7 @@ public class PenetrationServerApplication {
     }
 
     @PostConstruct
-    public void start() throws InterruptedException {
+    public void start() {
         Server server = new Server();
         server.start();
     }

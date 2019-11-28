@@ -18,7 +18,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 
 @Data
 @AllArgsConstructor
@@ -32,9 +34,9 @@ public class ConnectMsg implements ClientMessage {
         new Thread(){
             @Override
             public void run() {
-                server();
 //                channel.close();
-                client();
+                server();
+                client(channel);
             }
         }.start();
     }
@@ -59,12 +61,16 @@ public class ConnectMsg implements ClientMessage {
                     }
                 });
 
-        InetSocketAddress inetSocketAddress = new InetSocketAddress(getSelfHost(),getSelfPort());
-        peerBootstrap.bind(inetSocketAddress);
-        log.info("bind {}",inetSocketAddress);
+//        InetSocketAddress inetSocketAddress = new InetSocketAddress(getSelfHost(),getSelfPort());
+        try {
+            peerBootstrap.bind(InetAddress.getLocalHost().getHostAddress(),getSelfPort());
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        log.info("bind {}",getSelfPort());
     }
 
-    private void client(){
+    private void client(Channel channel){
         EventLoopGroup networkEventLoopGroup = new NioEventLoopGroup();
         final Bootstrap clientBootstrap = new Bootstrap();
         clientBootstrap.group(networkEventLoopGroup)
@@ -82,8 +88,17 @@ public class ConnectMsg implements ClientMessage {
                         pipeline.addLast(new MyPeerHandler(getName()));
                     }
                 });
+
+//        clientBootstrap.bind(getSelfHost(),getSelfPort());
+//        log.info("bind {}:{}",getSelfHost(),getSelfPort());
+
+
         clientBootstrap.connect(getHost(),getPort());
+
+
         log.info("connect {}:{}",getHost(),getPort());
+
+//        channel.close();
     }
 
     private String host;

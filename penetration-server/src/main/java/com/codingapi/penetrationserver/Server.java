@@ -1,5 +1,6 @@
 package com.codingapi.penetrationserver;
 
+import com.dosse.upnp.UPnP;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -20,7 +21,17 @@ public class Server {
 
     private static final EventLoopGroup networkEventLoopGroup = new NioEventLoopGroup(6);
 
-    public void start() throws InterruptedException {
+    public void start() {
+
+        int port = 8090;
+
+        boolean available =  UPnP.isUPnPAvailable();
+        if(available){
+            if(!UPnP.isMappedTCP(port)){
+                UPnP.openPortTCP(port);
+            }
+        }
+
         final ServerBootstrap peerBootstrap = new ServerBootstrap();
         peerBootstrap.group(acceptorEventLoopGroup, networkEventLoopGroup)
                 .channel(NioServerSocketChannel.class)
@@ -39,8 +50,7 @@ public class Server {
                     }
                 });
 
-        peerBootstrap.bind(8090);
+        peerBootstrap.bind(port);
 
-        Thread.sleep(Integer.MAX_VALUE);
     }
 }
